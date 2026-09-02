@@ -1,0 +1,2082 @@
+/*
+ * saIdHolidaySearch
+ *
+ * Responsive Layout
+ *
+ * Desktop / Tablet:
+ *
+ * ┌───────────────────────┬───────────────────────────────────┐
+ * │                       │                                   │
+ * │ How the Process Works │        ID Number Lookup            │
+ * │                       │                                   │
+ * │  1 Enter ID           │                                   │
+ * │  2 Validate           │        Results                    │
+ * │  3 View Holidays      │                                   │
+ * │                       │                                   │
+ * └───────────────────────┴───────────────────────────────────┘
+ *
+ * Mobile:
+ *
+ * ┌───────────────────────────────┐
+ * │ How the Process Works         │
+ * ├───────────────────────────────┤
+ * │ ID Number Lookup              │
+ * ├───────────────────────────────┤
+ * │ Results                       │
+ * └───────────────────────────────┘
+ */
+
+
+/* =========================================================
+   DESIGN TOKENS
+   ========================================================= */
+
+:host {
+
+    --cs-accent: #2a6fe1;
+    --cs-accent-hover: #134596;
+    --cs-accent-subtle: #ebf2fc;
+    --cs-accent-border: #b7d2ff;
+
+    --cs-ink: #041e2e;
+    --cs-text: #26465b;
+    --cs-text-muted: #5b798a;
+
+    --cs-bg: #ffffff;
+    --cs-bg-faint: #f9fcff;
+    --cs-bg-light: #eff3fa;
+
+    --cs-border: #dfe7ef;
+
+    --cs-error: #b83b54;
+    --cs-error-bg: #fff2f5;
+    --cs-error-border: #fddfe7;
+
+    --cs-match-bg: #fdf6e8;
+    --cs-match-bg-hover: #ffefd4;
+    --cs-match-accent: #d8982a;
+    --cs-match-chip-bg: #ffe5b4;
+    --cs-match-chip-text: #6d4500;
+
+    --cs-header-start: #09e785;
+    --cs-header-mid: #111c25;
+    --cs-header-end: #0e6dba;
+
+    /*
+     * Overall maximum width.
+     *
+     * 1180px provides enough room for:
+     * left process section +
+     * right lookup/results section.
+     */
+    --cs-page-max: 1180px;
+
+    --cs-radius-sm: 6px;
+    --cs-radius-md: 8px;
+    --cs-radius-lg: 12px;
+    --cs-radius-pill: 9999px;
+
+    --cs-shadow:
+        0 1px 2px rgba(4, 30, 46, 0.06),
+        0 1px 3px rgba(4, 30, 46, 0.04);
+
+
+    /* Lightning Input */
+    --slds-c-input-radius-border:
+        var(--cs-radius-sm);
+
+    --sds-c-input-radius-border:
+        var(--cs-radius-sm);
+
+    --slds-c-input-color-border:
+        #c7d3dc;
+
+    --sds-c-input-color-border:
+        #c7d3dc;
+
+    --slds-c-input-color-border-focus:
+        var(--cs-accent);
+
+    --sds-c-input-color-border-focus:
+        var(--cs-accent);
+
+
+    display: block;
+
+    color: var(--cs-ink);
+}
+
+
+/* =========================================================
+   APPLICATION
+   ========================================================= */
+
+.cs-app {
+    width: 100%;
+    display: block;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.cs-appbar {
+
+    background:
+        linear-gradient(
+            120deg,
+            var(--cs-header-start) 0%,
+            var(--cs-header-mid) 55%,
+            var(--cs-header-end) 100%
+        );
+
+    color: #ffffff;
+
+    box-shadow:
+        0 2px 12px rgba(4, 30, 46, 0.22);
+}
+
+
+.cs-appbar__inner {
+
+    width: 100%;
+    max-width: var(--cs-page-max);
+
+    margin: 0 auto;
+
+    padding:
+        1rem
+        0.75rem;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 0.5rem;
+
+    text-align: center;
+}
+
+
+.cs-appbar__logo {
+
+    display: flex;
+
+    align-items: center;
+}
+
+
+.cs-appbar__logo-text {
+
+    font-size: 1.375rem;
+
+    font-weight: 800;
+
+    line-height: 1;
+
+    color: #ffffff;
+
+    white-space: nowrap;
+}
+
+
+.cs-appbar__text {
+
+    min-width: 0;
+}
+
+
+.cs-appbar__title {
+
+    margin: 0;
+
+    font-size: 1.25rem;
+
+    font-weight: 700;
+
+    line-height: 1.25;
+
+    color: #ffffff;
+}
+
+
+.cs-appbar__subtitle {
+
+    margin:
+        0.5rem
+        auto
+        0;
+
+    max-width: 46rem;
+
+    font-size: 0.875rem;
+
+    line-height: 1.5;
+
+    color:
+        rgba(255, 255, 255, 0.82);
+}
+
+
+.cs-appbar__spacer {
+
+    display: none;
+}
+
+
+/* =========================================================
+   MAIN LAYOUT
+   ========================================================= */
+
+.cs-layout {
+
+    width: 100%;
+
+    max-width: var(--cs-page-max);
+
+    margin: 0 auto;
+
+    padding:
+        2rem
+        1rem
+        3rem;
+
+    display: grid;
+
+    /*
+     * LEFT  = Process
+     * RIGHT = Lookup + Results
+     */
+    grid-template-columns:
+        minmax(250px, 0.85fr)
+        minmax(0, 2fr);
+
+    align-items: start;
+
+    column-gap: 2rem;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   LEFT PROCESS COLUMN
+   ========================================================= */
+
+.cs-process-column {
+
+    width: 100%;
+
+    min-width: 0;
+}
+
+
+.cs-card_info {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    background:
+        var(--cs-bg-faint);
+}
+
+
+/* =========================================================
+   RIGHT CONTENT COLUMN
+   ========================================================= */
+
+.cs-content-column {
+
+    width: 100%;
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1rem;
+}
+
+
+/*
+ * Lookup and Results are both direct children of the
+ * same content column.
+ *
+ * Therefore they always have the same width.
+ */
+
+.cs-card_lookup {
+
+    width: 100%;
+
+    max-width: none;
+
+    box-sizing: border-box;
+}
+
+
+.cs-results {
+
+    width: 100%;
+
+    max-width: none;
+
+    margin: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1rem;
+
+    min-width: 0;
+}
+
+
+/* =========================================================
+   CARD
+   ========================================================= */
+
+.cs-card {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    background:
+        var(--cs-bg);
+
+    border:
+        1px solid
+        var(--cs-border);
+
+    border-radius:
+        var(--cs-radius-lg);
+
+    box-shadow:
+        var(--cs-shadow);
+
+    padding:
+        1.25rem;
+}
+
+
+.cs-card_accent {
+
+    background:
+        var(--cs-bg-faint);
+
+    border-left:
+        4px solid
+        var(--cs-accent);
+}
+
+
+/* =========================================================
+   SECTION TITLES
+   ========================================================= */
+
+.cs-section__title {
+
+    margin:
+        0
+        0
+        1rem;
+
+    font-size: 1.05rem;
+
+    font-weight: 600;
+
+    line-height: 1.3;
+
+    color:
+        var(--cs-ink);
+}
+
+
+.cs-section__head {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    margin-bottom: 1rem;
+}
+
+
+.cs-section__head .cs-section__title {
+
+    margin-bottom: 0;
+}
+
+
+.cs-section__title:focus {
+
+    outline: none;
+}
+
+
+.cs-section__title:focus-visible {
+
+    outline:
+        2px solid
+        var(--cs-accent);
+
+    outline-offset: 3px;
+
+    border-radius:
+        var(--cs-radius-sm);
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.cs-form {
+
+    width: 100%;
+}
+
+
+.cs-form__row {
+
+    display: flex;
+
+    flex-direction: row;
+
+    align-items: flex-end;
+
+    gap: 1rem;
+
+    width: 100%;
+}
+
+
+.cs-form__field {
+
+    flex:
+        1 1 auto;
+
+    min-width: 0;
+}
+
+
+.cs-form__action {
+
+    flex:
+        0 0 auto;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+.cs-help {
+
+    margin:
+        0.5rem
+        0
+        0;
+
+    font-size: 0.8125rem;
+
+    line-height: 1.5;
+
+    color:
+        var(--cs-text-muted);
+
+    text-align: left;
+}
+
+
+/* =========================================================
+   SEARCH BUTTON
+   ========================================================= */
+
+.cs-search-button {
+
+    min-width: 80px;
+
+    height: 34px;
+
+    padding:
+        0
+        2rem;
+
+    border: none;
+
+    background:
+        #2f6fdf;
+
+    color: #ffffff;
+
+    font-family: inherit;
+
+    font-size: 1rem;
+
+    font-weight: 600;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    clip-path:
+        polygon(
+            8px 0,
+            calc(100% - 8px) 0,
+            100% 8px,
+            100% calc(100% - 8px),
+            calc(100% - 8px) 100%,
+            8px 100%,
+            0 calc(100% - 8px),
+            0 8px
+        );
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.15s ease;
+}
+
+
+.cs-search-button:hover {
+
+    background:
+        #245fc7;
+}
+
+
+.cs-search-button:active {
+
+    background:
+        #1e55b5;
+
+    transform:
+        translateY(1px);
+}
+
+
+.cs-search-button:focus-visible {
+
+    outline:
+        3px solid
+        rgba(47, 111, 223, 0.3);
+
+    outline-offset: 3px;
+}
+
+
+.cs-search-button:disabled {
+
+    background:
+        #b7b7b7;
+
+    color:
+        #ffffff;
+
+    cursor:
+        not-allowed;
+
+    opacity:
+        0.7;
+}
+
+
+/* =========================================================
+   PROCESS STEPS
+   ========================================================= */
+
+.cs-steps {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1rem;
+
+    margin:
+        1rem
+        0
+        0;
+
+    padding: 0;
+
+    list-style: none;
+}
+
+
+.cs-step {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 0.75rem;
+
+    min-width: 0;
+}
+
+
+.cs-step__num {
+
+    flex:
+        0 0 auto;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 1.75rem;
+
+    height: 1.75rem;
+
+    border-radius:
+        var(--cs-radius-pill);
+
+    background:
+        var(--cs-accent);
+
+    color:
+        #ffffff;
+
+    font-size: 0.75rem;
+
+    font-weight: 700;
+}
+
+
+.cs-step__body {
+
+    display: block;
+
+    min-width: 0;
+}
+
+
+.cs-step__title {
+
+    display: block;
+
+    font-size: 0.875rem;
+
+    font-weight: 600;
+
+    line-height: 1.35;
+
+    color:
+        var(--cs-ink);
+}
+
+
+.cs-step__text {
+
+    display: block;
+
+    margin-top: 0.25rem;
+
+    font-size: 0.8125rem;
+
+    line-height: 1.5;
+
+    color:
+        var(--cs-text-muted);
+
+    max-width: 42ch;
+}
+
+
+/* =========================================================
+   PLACEHOLDER
+   ========================================================= */
+
+.cs-placeholder {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 220px;
+
+    text-align: center;
+
+    background:
+        var(--cs-bg-faint);
+
+    border-style: dashed;
+}
+
+
+.cs-placeholder__mark {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 2.75rem;
+
+    height: 2.75rem;
+
+    margin-bottom: 0.5rem;
+
+    border-radius:
+        var(--cs-radius-pill);
+
+    background:
+        var(--cs-accent-subtle);
+
+    color:
+        var(--cs-accent);
+}
+
+
+.cs-placeholder__mark svg {
+
+    width: 1.5rem;
+
+    height: 1.5rem;
+
+    display: block;
+}
+
+
+.cs-placeholder__title {
+
+    margin:
+        0.25rem
+        0
+        0;
+
+    font-size: 0.9375rem;
+
+    font-weight: 600;
+
+    color:
+        var(--cs-ink);
+}
+
+
+.cs-placeholder__text {
+
+    max-width: 50ch;
+
+    margin:
+        0.5rem
+        0
+        0;
+
+    font-size: 0.875rem;
+
+    line-height: 1.5;
+
+    color:
+        var(--cs-text-muted);
+}
+
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.cs-loading {
+
+    position: relative;
+
+    min-height: 3rem;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   ALERTS
+   ========================================================= */
+
+.cs-alert {
+
+    margin-top: 1rem;
+
+    padding:
+        0.75rem
+        1rem;
+
+    border-radius:
+        var(--cs-radius-md);
+
+    font-size: 0.875rem;
+
+    line-height: 1.5;
+
+    font-weight: 500;
+}
+
+
+.cs-alert_error {
+
+    background:
+        var(--cs-error-bg);
+
+    border:
+        1px solid
+        var(--cs-error-border);
+
+    color:
+        var(--cs-error);
+}
+
+
+.cs-alert_info {
+
+    background:
+        var(--cs-accent-subtle);
+
+    border:
+        1px solid
+        var(--cs-accent-border);
+
+    color:
+        var(--cs-accent-hover);
+
+    margin-top: 0;
+}
+
+
+/* =========================================================
+   KEY INFORMATION
+   ========================================================= */
+
+.cs-facts {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 1fr)
+        );
+
+    gap: 0.75rem;
+
+    margin: 0;
+}
+
+
+.cs-fact {
+
+    min-width: 0;
+
+    background:
+        var(--cs-bg);
+
+    border:
+        1px solid
+        var(--cs-border);
+
+    border-radius:
+        var(--cs-radius-md);
+
+    padding:
+        0.75rem
+        1rem;
+}
+
+
+.cs-fact__label {
+
+    margin: 0;
+
+    font-size: 0.6875rem;
+
+    font-weight: 600;
+
+    letter-spacing: 0.06em;
+
+    text-transform: uppercase;
+
+    color:
+        var(--cs-text-muted);
+}
+
+
+.cs-fact__value {
+
+    margin:
+        0.25rem
+        0
+        0;
+
+    font-size: 1rem;
+
+    font-weight: 500;
+
+    line-height: 1.4;
+
+    color:
+        var(--cs-ink);
+
+    overflow-wrap: break-word;
+}
+
+
+/* =========================================================
+   YEAR BADGE
+   ========================================================= */
+
+.cs-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding:
+        0.3rem
+        0.7rem;
+
+    border-radius:
+        var(--cs-radius-pill);
+
+    background:
+        var(--cs-accent-subtle);
+
+    color:
+        var(--cs-accent-hover);
+
+    font-size: 0.75rem;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   HOLIDAY TABLE
+   ========================================================= */
+
+.cs-table-wrap {
+
+    width: 100%;
+
+    border:
+        1px solid
+        var(--cs-border);
+
+    border-radius:
+        var(--cs-radius-md);
+
+    overflow: auto;
+}
+
+
+.cs-table {
+
+    width: 100%;
+
+    table-layout: fixed;
+}
+
+
+.cs-table thead th {
+
+    background:
+        var(--cs-bg-light);
+
+    color:
+        var(--cs-text-muted);
+
+    font-size: 0.6875rem;
+
+    font-weight: 600;
+
+    letter-spacing: 0.06em;
+
+    text-transform: uppercase;
+
+    white-space: nowrap;
+}
+
+
+.cs-table tbody td {
+
+    color:
+        var(--cs-text);
+
+    font-size: 0.875rem;
+
+    line-height: 1.5;
+
+    vertical-align: top;
+
+    overflow-wrap: break-word;
+}
+
+
+.cs-table thead th:nth-child(1) {
+
+    width: 8rem;
+}
+
+
+.cs-table thead th:nth-child(2) {
+
+    width: 26%;
+}
+
+
+.cs-table thead th:nth-child(3) {
+
+    width: 9rem;
+}
+
+
+.cs-table tbody tr:hover td {
+
+    background:
+        var(--cs-bg-faint);
+}
+
+
+/* =========================================================
+   BIRTHDAY MATCH
+   ========================================================= */
+
+.cs-cell-holiday {
+
+    position: relative;
+}
+
+
+.cs-row__flag {
+
+    display: inline-block;
+
+    margin-left: 0.5rem;
+
+    padding:
+        0.125rem
+        0.5rem;
+
+    border-radius:
+        var(--cs-radius-pill);
+
+    background:
+        var(--cs-match-chip-bg);
+
+    color:
+        var(--cs-match-chip-text);
+
+    font-size: 0.6875rem;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+.cs-table tbody tr.cs-row_match td {
+
+    background:
+        var(--cs-match-bg);
+}
+
+
+.cs-table tbody tr.cs-row_match td:first-child {
+
+    box-shadow:
+        inset 3px 0 0 0
+        var(--cs-match-accent);
+}
+
+
+.cs-table tbody tr.cs-row_match:hover td {
+
+    background:
+        var(--cs-match-bg-hover);
+}
+
+
+/* =========================================================
+   CONFETTI
+   ========================================================= */
+
+.cs-confetti {
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    pointer-events: none;
+}
+
+
+.cs-confetti__piece {
+
+    position: absolute;
+
+    top: 0.5rem;
+
+    width: 6px;
+
+    height: 9px;
+
+    border-radius: 1px;
+
+    opacity: 0;
+
+    animation:
+        cs-burst-a
+        4.2s
+        cubic-bezier(0.18, 0.5, 0.3, 1)
+        1
+        forwards;
+}
+
+
+.cs-confetti__piece:nth-child(1) {
+    left: 4%;
+    background: #2a6fe1;
+    animation-delay: 0.05s;
+}
+
+.cs-confetti__piece:nth-child(2) {
+    left: 13%;
+    background: #d8982a;
+    animation-name: cs-burst-b;
+    animation-delay: 0.7s;
+}
+
+.cs-confetti__piece:nth-child(3) {
+    left: 21%;
+    background: #00a084;
+    animation-name: cs-burst-c;
+    animation-delay: 1.4s;
+}
+
+.cs-confetti__piece:nth-child(4) {
+    left: 29%;
+    background: #eb5070;
+    animation-name: cs-burst-d;
+    animation-delay: 0.3s;
+}
+
+.cs-confetti__piece:nth-child(5) {
+    left: 37%;
+    background: #915eff;
+    animation-delay: 2s;
+}
+
+.cs-confetti__piece:nth-child(6) {
+    left: 45%;
+    background: #ed8565;
+    animation-name: cs-burst-b;
+    animation-delay: 1.05s;
+}
+
+.cs-confetti__piece:nth-child(7) {
+    left: 52%;
+    background: #2a6fe1;
+    animation-name: cs-burst-c;
+    animation-delay: 0.15s;
+}
+
+.cs-confetti__piece:nth-child(8) {
+    left: 60%;
+    background: #d8982a;
+    animation-name: cs-burst-d;
+    animation-delay: 2.3s;
+}
+
+.cs-confetti__piece:nth-child(9) {
+    left: 67%;
+    background: #00a084;
+    animation-delay: 0.85s;
+}
+
+.cs-confetti__piece:nth-child(10) {
+    left: 75%;
+    background: #eb5070;
+    animation-name: cs-burst-b;
+    animation-delay: 1.7s;
+}
+
+.cs-confetti__piece:nth-child(11) {
+    left: 82%;
+    background: #915eff;
+    animation-name: cs-burst-c;
+    animation-delay: 0.45s;
+}
+
+.cs-confetti__piece:nth-child(12) {
+    left: 89%;
+    background: #ed8565;
+    animation-name: cs-burst-d;
+    animation-delay: 1.2s;
+}
+
+.cs-confetti__piece:nth-child(13) {
+    left: 95%;
+    background: #2a6fe1;
+    animation-delay: 2.4s;
+}
+
+.cs-confetti__piece:nth-child(14) {
+    left: 99%;
+    background: #d8982a;
+    animation-name: cs-burst-b;
+    animation-delay: 0.6s;
+}
+
+
+/* =========================================================
+   CONFETTI ANIMATIONS
+   ========================================================= */
+
+@keyframes cs-burst-a {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translate3d(0, 0, 0)
+            rotate(0deg)
+            scale(0.5);
+    }
+
+    8% {
+        opacity: 1;
+    }
+
+    75% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translate3d(-34px, 190px, 0)
+            rotate(900deg)
+            scale(1);
+    }
+}
+
+
+@keyframes cs-burst-b {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translate3d(0, 0, 0)
+            rotate(0deg)
+            scale(0.5);
+    }
+
+    8% {
+        opacity: 1;
+    }
+
+    75% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translate3d(38px, 205px, 0)
+            rotate(-820deg)
+            scale(1);
+    }
+}
+
+
+@keyframes cs-burst-c {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translate3d(0, 0, 0)
+            rotate(0deg)
+            scale(0.5);
+    }
+
+    8% {
+        opacity: 1;
+    }
+
+    75% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translate3d(-14px, 175px, 0)
+            rotate(660deg)
+            scale(0.9);
+    }
+}
+
+
+@keyframes cs-burst-d {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translate3d(0, 0, 0)
+            rotate(0deg)
+            scale(0.5);
+    }
+
+    8% {
+        opacity: 1;
+    }
+
+    75% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translate3d(18px, 215px, 0)
+            rotate(-980deg)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   LARGE DESKTOP
+   1200px+
+   ========================================================= */
+
+@media (min-width: 75em) {
+
+    .cs-layout {
+
+        padding:
+            2.5rem
+            1.5rem
+            3.5rem;
+
+        grid-template-columns:
+            minmax(280px, 0.85fr)
+            minmax(600px, 2fr);
+
+        column-gap: 3rem;
+    }
+
+
+    .cs-card {
+
+        padding:
+            1.5rem;
+    }
+
+
+    .cs-appbar__inner {
+
+        padding:
+            1.25rem
+            1.5rem;
+    }
+
+
+    .cs-appbar__logo-text {
+
+        font-size: 1.75rem;
+    }
+
+
+    .cs-appbar__title {
+
+        font-size: 1.625rem;
+    }
+
+
+    .cs-appbar__subtitle {
+
+        font-size: 0.9375rem;
+    }
+}
+
+
+/* =========================================================
+   TABLET
+   768px - 1199px
+   ========================================================= */
+
+@media (min-width: 48em) and (max-width: 74.9375em) {
+
+    .cs-layout {
+
+        padding:
+            1.75rem
+            1rem
+            3rem;
+
+        grid-template-columns:
+            minmax(220px, 0.8fr)
+            minmax(0, 2fr);
+
+        column-gap: 1.5rem;
+    }
+
+
+    .cs-appbar__inner {
+
+        padding:
+            1.25rem
+            1rem;
+
+        flex-direction: row;
+
+        align-items: center;
+
+        gap: 1rem;
+    }
+
+
+    .cs-appbar__logo,
+    .cs-appbar__spacer {
+
+        flex:
+            1 1 0;
+
+        min-width: 0;
+    }
+
+
+    .cs-appbar__logo {
+
+        justify-content: flex-start;
+    }
+
+
+    .cs-appbar__spacer {
+
+        display: block;
+
+        visibility: hidden;
+    }
+
+
+    .cs-appbar__logo-text {
+
+        font-size: 1.5rem;
+    }
+
+
+    .cs-appbar__text {
+
+        flex:
+            0 1 auto;
+
+        text-align: center;
+
+        min-width: 0;
+    }
+
+
+    .cs-appbar__title {
+
+        font-size: 1.35rem;
+    }
+
+
+    .cs-appbar__subtitle {
+
+        font-size: 0.875rem;
+    }
+
+
+    /*
+     * Keep input and button on one line where possible.
+     */
+    .cs-form__row {
+
+        gap: 0.75rem;
+    }
+
+
+    .cs-search-button {
+
+        padding:
+            0
+            1.5rem;
+    }
+
+
+    /*
+     * Key information becomes two columns on
+     * smaller tablets.
+     */
+    .cs-facts {
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+
+    .cs-fact:last-child {
+
+        grid-column:
+            1 / -1;
+    }
+}
+
+
+/* =========================================================
+   SMALL TABLET / LARGE MOBILE
+   600px - 767px
+   ========================================================= */
+
+@media (min-width: 37.5em) and (max-width: 47.9375em) {
+
+    .cs-layout {
+
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 1.5rem;
+
+        padding:
+            1.5rem
+            1rem
+            2.5rem;
+    }
+
+
+    .cs-process-column,
+    .cs-content-column {
+
+        width: 100%;
+
+        max-width: 720px;
+
+        margin:
+            0
+            auto;
+    }
+
+
+    .cs-form__row {
+
+        flex-direction: row;
+
+        align-items: flex-end;
+    }
+
+
+    .cs-form__field {
+
+        flex:
+            1 1 auto;
+    }
+
+
+    .cs-form__action {
+
+        flex:
+            0 0 auto;
+    }
+
+
+    .cs-search-button {
+
+        min-width: 100px;
+    }
+
+
+    .cs-facts {
+
+        grid-template-columns:
+            repeat(
+                3,
+                minmax(0, 1fr)
+            );
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   Below 600px
+   ========================================================= */
+
+@media (max-width: 37.4375em) {
+
+    .cs-layout {
+
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 1.25rem;
+
+        padding:
+            1.25rem
+            0.75rem
+            2.5rem;
+    }
+
+
+    .cs-process-column,
+    .cs-content-column {
+
+        width: 100%;
+
+        max-width: none;
+
+        margin: 0;
+    }
+
+
+    /*
+     * Header becomes stacked on mobile.
+     */
+
+    .cs-appbar__inner {
+
+        padding:
+            1rem
+            0.75rem;
+
+        gap: 0.5rem;
+    }
+
+
+    .cs-appbar__logo-text {
+
+        font-size: 1.25rem;
+    }
+
+
+    .cs-appbar__title {
+
+        font-size: 1.1rem;
+
+        line-height: 1.3;
+    }
+
+
+    .cs-appbar__subtitle {
+
+        margin-top: 0.4rem;
+
+        font-size: 0.8125rem;
+
+        line-height: 1.45;
+    }
+
+
+    /*
+     * Cards
+     */
+
+    .cs-card {
+
+        padding:
+            1rem;
+    }
+
+
+    /*
+     * Search form becomes vertical.
+     */
+
+    .cs-form__row {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 0.75rem;
+    }
+
+
+    .cs-form__field {
+
+        width: 100%;
+    }
+
+
+    .cs-form__action {
+
+        width: 100%;
+    }
+
+
+    .cs-search-button {
+
+        width: 100%;
+
+        min-width: 0;
+
+        height: 38px;
+    }
+
+
+    .cs-help {
+
+        text-align: left;
+    }
+
+
+    /*
+     * Process steps
+     */
+
+    .cs-steps {
+
+        gap: 1rem;
+    }
+
+
+    .cs-step {
+
+        gap: 0.65rem;
+    }
+
+
+    .cs-step__text {
+
+        max-width: none;
+    }
+
+
+    /*
+     * Key information
+     */
+
+    .cs-facts {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .cs-fact {
+
+        width: 100%;
+    }
+
+
+    /*
+     * Holiday section header
+     */
+
+    .cs-section__head {
+
+        align-items: flex-start;
+    }
+
+
+    .cs-section__head .cs-section__title {
+
+        font-size: 0.95rem;
+    }
+
+
+    /*
+     * Mobile table becomes cards.
+     */
+
+    .cs-table-wrap {
+
+        border: none;
+
+        overflow: visible;
+    }
+
+
+    .cs-table,
+    .cs-table tbody,
+    .cs-table tbody tr,
+    .cs-table tbody td {
+
+        display: block;
+
+        width: auto;
+    }
+
+
+    .cs-table thead {
+
+        position: absolute;
+
+        width: 1px;
+
+        height: 1px;
+
+        margin: -1px;
+
+        padding: 0;
+
+        border: 0;
+
+        overflow: hidden;
+
+        clip: rect(0 0 0 0);
+
+        clip-path: inset(50%);
+
+        white-space: nowrap;
+    }
+
+
+    .cs-table tbody tr {
+
+        background:
+            var(--cs-bg);
+
+        border:
+            1px solid
+            var(--cs-border);
+
+        border-radius:
+            var(--cs-radius-md);
+
+        box-shadow:
+            var(--cs-shadow);
+
+        padding:
+            1rem;
+
+        margin-bottom:
+            0.75rem;
+    }
+
+
+    .cs-table tbody tr:last-child {
+
+        margin-bottom: 0;
+    }
+
+
+    .cs-table tbody td {
+
+        background: transparent;
+
+        border: none;
+
+        padding: 0;
+
+        overflow-wrap: break-word;
+    }
+
+
+    .cs-table tbody td + td {
+
+        margin-top:
+            0.5rem;
+    }
+
+
+    /*
+     * Date
+     */
+
+    .cs-table tbody td:nth-child(1) {
+
+        display: inline-block;
+
+        padding:
+            0.125rem
+            0.5rem;
+
+        border-radius:
+            var(--cs-radius-pill);
+
+        background:
+            var(--cs-accent-subtle);
+
+        color:
+            var(--cs-accent-hover);
+
+        font-size:
+            0.6875rem;
+
+        font-weight: 600;
+    }
+
+
+    /*
+     * Holiday name
+     */
+
+    .cs-table tbody td:nth-child(2) {
+
+        font-size:
+            1rem;
+
+        font-weight:
+            600;
+
+        color:
+            var(--cs-ink);
+    }
+
+
+    /*
+     * Type and Description labels
+     */
+
+    .cs-table tbody td:nth-child(3)::before,
+    .cs-table tbody td:nth-child(4)::before {
+
+        content:
+            attr(data-label);
+
+        display: block;
+
+        margin-bottom:
+            0.125rem;
+
+        font-size:
+            0.625rem;
+
+        font-weight:
+            600;
+
+        letter-spacing:
+            0.06em;
+
+        text-transform:
+            uppercase;
+
+        color:
+            var(--cs-text-muted);
+    }
+
+
+    /*
+     * Birthday chip
+     */
+
+    .cs-row__flag {
+
+        display: inline-block;
+
+        margin-top:
+            0.35rem;
+
+        margin-left: 0;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+   Below 360px
+   ========================================================= */
+
+@media (max-width: 22.4375em) {
+
+    .cs-layout {
+
+        padding-left:
+            0.5rem;
+
+        padding-right:
+            0.5rem;
+    }
+
+
+    .cs-card {
+
+        padding:
+            0.875rem;
+    }
+
+
+    .cs-appbar__title {
+
+        font-size:
+            1rem;
+    }
+
+
+    .cs-appbar__subtitle {
+
+        font-size:
+            0.75rem;
+    }
+
+
+    .cs-section__title {
+
+        font-size:
+            0.95rem;
+    }
+
+
+    .cs-step__title {
+
+        font-size:
+            0.8125rem;
+    }
+
+
+    .cs-step__text {
+
+        font-size:
+            0.75rem;
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .cs-confetti {
+
+        display: none;
+    }
+
+
+    .cs-search-button {
+
+        transition: none;
+    }
+}

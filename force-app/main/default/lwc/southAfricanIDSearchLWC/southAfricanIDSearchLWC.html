@@ -1,0 +1,555 @@
+<template>
+    <div class="cs-app">
+
+        <!-- =====================================================
+             HEADER
+             ===================================================== -->
+        <header class="cs-appbar">
+            <div class="cs-appbar__inner">
+
+                <!-- Logo -->
+                <div class="cs-appbar__logo">
+                    <span class="cs-appbar__logo-text">
+                        CloudSmith
+                    </span>
+                </div>
+
+                <!-- Header Content -->
+                <div class="cs-appbar__text">
+
+                    <h1 class="cs-appbar__title">
+                        South African ID Verification &amp; Public Holiday Information
+                    </h1>
+
+                    <p class="cs-appbar__subtitle">
+                        Use this service to validate a South African ID number,
+                        retrieve key identity details, and access relevant public
+                        holiday information.
+                    </p>
+
+                </div>
+
+                <!-- Spacer keeps title centered on desktop -->
+                <div
+                    class="cs-appbar__spacer"
+                    aria-hidden="true">
+                </div>
+
+            </div>
+        </header>
+
+
+        <!-- =====================================================
+             MAIN CONTENT
+             ===================================================== -->
+        <main class="cs-layout">
+
+            <!-- =================================================
+                 LEFT COLUMN
+                 HOW THE PROCESS WORKS
+                 ================================================= -->
+            <aside
+                class="cs-process-column"
+                aria-labelledby="about-heading">
+
+                <section class="cs-card cs-card_info">
+
+                    <h2
+                        id="about-heading"
+                        class="cs-section__title">
+
+                        How the Process Works
+
+                    </h2>
+
+
+                    <ol class="cs-steps">
+
+                        <!-- Step 1 -->
+                        <li class="cs-step">
+
+                            <span
+                                class="cs-step__num"
+                                aria-hidden="true">
+                                1
+                            </span>
+
+                            <span class="cs-step__body">
+
+                                <span class="cs-step__title">
+                                    Enter an ID Number
+                                </span>
+
+                                <span class="cs-step__text">
+                                    Enter all 13 digits without spaces.
+                                </span>
+
+                            </span>
+
+                        </li>
+
+
+                        <!-- Step 2 -->
+                        <li class="cs-step">
+
+                            <span
+                                class="cs-step__num"
+                                aria-hidden="true">
+                                2
+                            </span>
+
+                            <span class="cs-step__body">
+
+                                <span class="cs-step__title">
+                                    Validate &amp; Decode
+                                </span>
+
+                                <span class="cs-step__text">
+                                    We validate the ID and extract its date
+                                    of birth, gender, and citizenship status.
+                                </span>
+
+                            </span>
+
+                        </li>
+
+
+                        <!-- Step 3 -->
+                        <li class="cs-step">
+
+                            <span
+                                class="cs-step__num"
+                                aria-hidden="true">
+                                3
+                            </span>
+
+                            <span class="cs-step__body">
+
+                                <span class="cs-step__title">
+                                    View Holiday Information
+                                </span>
+
+                                <span class="cs-step__text">
+                                    Relevant South African public holidays
+                                    are retrieved and displayed with your results.
+                                </span>
+
+                            </span>
+
+                        </li>
+
+                    </ol>
+
+                </section>
+
+            </aside>
+
+
+            <!-- =================================================
+                 RIGHT COLUMN
+                 ID LOOKUP + RESULTS
+                 ================================================= -->
+            <div class="cs-content-column">
+
+                <!-- =============================================
+                     ID NUMBER LOOKUP
+                     ============================================= -->
+                <section
+                    class="cs-card cs-card_lookup"
+                    aria-labelledby="search-heading">
+
+                    <h2
+                        id="search-heading"
+                        class="cs-section__title">
+
+                        South African ID Number
+
+                    </h2>
+
+
+                    <form
+                        class="cs-form"
+                        onsubmit={handleSubmit}>
+
+                        <div class="cs-form__row">
+
+                            <!-- ID INPUT -->
+                            <div class="cs-form__field">
+
+                                <lightning-input
+                                    name="saId"
+                                    type="text"
+                                    label="South Africa ID Number"
+                                    value={saIdNumber}
+                                    maxlength="13"
+                                    inputmode="numeric"
+                                    autocomplete="off"
+                                    data-id="id-input"
+                                    aria-describedby="id-help"
+                                    onchange={handleIdChange}
+                                    disabled={isLoading}
+                                    required>
+                                </lightning-input>
+
+                            </div>
+
+
+                            <!-- SEARCH BUTTON -->
+                            <div class="cs-form__action">
+
+                                <button
+                                    type="submit"
+                                    class="cs-search-button"
+                                    disabled={isSearchDisabled}>
+
+                                    Search
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- HELP TEXT -->
+                        <p
+                            id="id-help"
+                            class="cs-help">
+
+                            Enter 13 digits. Do not include spaces.
+
+                        </p>
+
+
+                        <!-- CLIENT ERROR -->
+                        <template if:true={clientError}>
+
+                            <div
+                                class="cs-alert cs-alert_error"
+                                role="alert">
+
+                                {clientError}
+
+                            </div>
+
+                        </template>
+
+                    </form>
+
+
+                    <!-- SERVER ERROR -->
+                    <template if:true={serverError}>
+
+                        <div
+                            class="cs-alert cs-alert_error"
+                            role="alert">
+
+                            {serverError}
+
+                        </div>
+
+                    </template>
+
+                </section>
+
+
+                <!-- =============================================
+                     RESULTS
+                     ============================================= -->
+                <section class="cs-results">
+
+
+                    <!-- =========================================
+                         LOADING
+                         ========================================= -->
+                    <template if:true={isLoading}>
+
+                        <div
+                            class="cs-card cs-placeholder"
+                            role="status">
+
+                            <div class="cs-loading">
+
+                                <lightning-spinner
+                                    alternative-text="Searching"
+                                    size="small">
+                                </lightning-spinner>
+
+                            </div>
+
+                            <p class="cs-placeholder__text">
+                                Searching, please wait.
+                            </p>
+
+                        </div>
+
+                    </template>
+
+
+                    <!-- =========================================
+                         INITIAL PLACEHOLDER
+                         ========================================= -->
+                    <template if:true={showPlaceholder}>
+
+                        <div
+                            class="cs-card cs-placeholder">
+
+                            <span class="cs-placeholder__mark">
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    focusable="false"
+                                    role="presentation">
+
+                                    <path
+                                        d="M10.5 3a7.5 7.5 0 1 1-5.3 12.8A7.5 7.5 0 0 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Zm5.9 10.5 4.3 4.3-1.4 1.4-4.3-4.3 1.4-1.4Z"
+                                        fill="currentColor">
+                                    </path>
+
+                                </svg>
+
+                            </span>
+
+
+                            <p class="cs-placeholder__title">
+                                No results yet
+                            </p>
+
+
+                            <p class="cs-placeholder__text">
+                                Enter a South African ID Number to see the
+                                details it encodes and this year's public holidays.
+                            </p>
+
+                        </div>
+
+                    </template>
+
+
+                    <!-- =========================================
+                         KEY INFORMATION
+                         ========================================= -->
+                    <template if:true={hasDecoded}>
+
+                        <section
+                            class="cs-card cs-card_accent"
+                            aria-labelledby="personal-heading">
+
+                            <h2
+                                id="personal-heading"
+                                class="cs-section__title"
+                                tabindex="-1"
+                                lwc:ref="resultsHeading">
+
+                                South African ID Extracted Information
+
+                            </h2>
+
+
+                            <dl class="cs-facts">
+
+                                <!-- Date of Birth -->
+                                <div class="cs-fact">
+
+                                    <dt class="cs-fact__label">
+                                        Date of birth
+                                    </dt>
+
+                                    <dd class="cs-fact__value">
+                                        {formattedDob}
+                                    </dd>
+
+                                </div>
+
+
+                                <!-- Gender -->
+                                <div class="cs-fact">
+
+                                    <dt class="cs-fact__label">
+                                        Gender
+                                    </dt>
+
+                                    <dd class="cs-fact__value">
+                                        {gender}
+                                    </dd>
+
+                                </div>
+
+
+                                <!-- Citizenship -->
+                                <div class="cs-fact">
+
+                                    <dt class="cs-fact__label">
+                                        Citizenship
+                                    </dt>
+
+                                    <dd class="cs-fact__value">
+                                        {citizenship}
+                                    </dd>
+
+                                </div>
+
+                            </dl>
+
+                        </section>
+
+                    </template>
+
+
+                    <!-- =========================================
+                         HOLIDAY MESSAGE
+                         ========================================= -->
+                    <template if:true={holidayBanner}>
+
+                        <div
+                            class="cs-alert cs-alert_info"
+                            role="status">
+
+                            {holidayBanner}
+
+                        </div>
+
+                    </template>
+
+
+                    <!-- =========================================
+                         PUBLIC HOLIDAYS
+                         ========================================= -->
+                    <template if:true={hasHolidays}>
+
+                        <section
+                            class="cs-card"
+                            aria-labelledby="holiday-heading">
+
+                            <div class="cs-section__head">
+
+                                <h2
+                                    id="holiday-heading"
+                                    class="cs-section__title">
+
+                                    South African Public Holidays
+
+                                </h2>
+
+
+                                <span class="cs-badge">
+                                    {currentYear}
+                                </span>
+
+                            </div>
+
+
+                            <div class="cs-table-wrap slds-scrollable_x">
+
+                                <table
+                                    class="slds-table slds-table_cell-buffer slds-table_bordered cs-table">
+
+                                    <thead>
+
+                                        <tr>
+
+                                            <th scope="col">
+                                                <abbr title="Date">
+                                                    Date
+                                                </abbr>
+                                            </th>
+
+                                            <th scope="col">
+                                                Holiday
+                                            </th>
+
+                                            <th scope="col">
+                                                Type
+                                            </th>
+
+                                            <th scope="col">
+                                                Description
+                                            </th>
+
+                                        </tr>
+
+                                    </thead>
+
+
+                                    <tbody>
+
+                                        <template
+                                            for:each={holidays}
+                                            for:item="h">
+
+                                            <tr
+                                                key={h.holidayName}
+                                                class={h.rowClass}>
+
+                                                <td data-label="Date">
+                                                    {h.holidayDate}
+                                                </td>
+
+
+                                                <td
+                                                    data-label="Holiday"
+                                                    class="cs-cell-holiday">
+
+                                                    {h.holidayName}
+
+
+                                                    <template if:true={h.isBirthdayMatch}>
+
+                                                        <span class="cs-row__flag">
+                                                            Your birthday
+                                                        </span>
+
+
+                                                        <span
+                                                            class="cs-confetti"
+                                                            aria-hidden="true">
+
+                                                            <template
+                                                                for:each={confettiPieces}
+                                                                for:item="p">
+
+                                                                <span
+                                                                    key={p.id}
+                                                                    class="cs-confetti__piece">
+                                                                </span>
+
+                                                            </template>
+
+                                                        </span>
+
+                                                    </template>
+
+                                                </td>
+
+
+                                                <td data-label="Type">
+                                                    {h.holidayPrimaryType}
+                                                </td>
+
+
+                                                <td data-label="Description">
+                                                    {h.holidayDescription}
+                                                </td>
+
+                                            </tr>
+
+                                        </template>
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                        </section>
+
+                    </template>
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+</template>

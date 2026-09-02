@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Citizenship__c</fullName>
+    <label>Citizenship</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>SA Citizen</fullName>
+                <default>false</default>
+                <label>SA Citizen</label>
+            </value>
+            <value>
+                <fullName>Permanent Resident</fullName>
+                <default>false</default>
+                <label>Permanent Resident</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
