@@ -5,7 +5,7 @@
  * @Purpose		: Wrapper class for a single public holiday returned to the LWC.
  * 				  Holiday list returned by the Calendarific API.
  **/
-public class PublicHolidayInfoDTO {
+public without sharing class PublicHolidayInfoDTO {
     @AuraEnabled public String holidayName;
     @AuraEnabled public String holidayDate;
     @AuraEnabled public String holidayDescription;

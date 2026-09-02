@@ -5,7 +5,7 @@
  *                    exceptions into Error_Log__c.
  *  Example: System.NullPointerException, System.CalloutException, System.DmlException
  */
-public class ErrorLogger {
+public without sharing class ErrorLogger {
 
     /**
      * Log an Apex exception.

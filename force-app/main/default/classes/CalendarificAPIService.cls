@@ -7,7 +7,7 @@
  *                  It also handles error logging and user-friendly messages for various failure scenarios.
  * 				  Holiday list returned by the Calendarific API.
  **/
-public class CalendarificAPIService {
+public without sharing class CalendarificAPIService {
 
     /**
      * Holds Calendarific integration configuration.

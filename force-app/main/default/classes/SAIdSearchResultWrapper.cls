@@ -5,7 +5,7 @@
  * @Purpose		: Wrapper class to send the extracted details based on the
  * 				  South Africa Id Number with respective list of current year holidays to the 'saIdHolidaySearch' lwc component.
  **/
-public class SAIdSearchResultWrapper {
+public without sharing class SAIdSearchResultWrapper {
     @AuraEnabled public Boolean isSuccess;
     @AuraEnabled public Boolean isHolidaysAvailable;
     @AuraEnabled public String transactionReferenceId;

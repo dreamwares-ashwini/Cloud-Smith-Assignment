@@ -12,7 +12,7 @@
  *   12    A     historically a race classification digit; obsolete and ignored
  *   13    Z     Luhn check digit over the first twelve 
  */
-public with sharing class SAIdDecoder {    
+public without sharing class SAIdDecoder {    
     @TestVisible private static Date todayOverride;
 
     /**

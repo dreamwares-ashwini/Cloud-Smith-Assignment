@@ -8,7 +8,7 @@
 * 					3. Persist the search information. 
 * 					4. Return the processed result to the LWC. 
 */
-public class SAIdSearchController {
+public without sharing class SAIdSearchController {
     
     /**   
     * @Purpose		: To Validate SAID number, calling the Calendarific api, create the SAId number record if found

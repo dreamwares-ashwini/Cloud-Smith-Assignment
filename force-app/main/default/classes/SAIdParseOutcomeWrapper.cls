@@ -4,7 +4,7 @@
  * @CreateDate	: 27-08-2026
  * @Purpose		: Used as Wrapper to map the values after extracting the South Africa Id Number
  */
-public with sharing class SAIdParseOutcomeWrapper {
+public without sharing class SAIdParseOutcomeWrapper {
     @AuraEnabled public Boolean isValidResult;
     @AuraEnabled public Date dateOfBirth;
     @AuraEnabled public Integer dobYear;

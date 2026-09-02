@@ -4,7 +4,7 @@
  * @CreateDate  : 27-08-2026
  * @Purpose     : To return the exception classes
  */
-public with sharing class SAIdException extends Exception {
+public without sharing class SAIdException extends Exception {
    
     public String userMessage { get; private set; }   
     public String errorCode { get; private set; }

@@ -5,7 +5,7 @@
  * @Purpose     : Persistence and processing for ID searches.One South_Africa_ID_Record__c record is maintained per SA ID hash, with
  * Search_Count__c incremented for each repeated search.
  */
-public class SAIdIdAPIService {
+public without sharing class SAIdIdAPIService {
 	/**
      * @Class Name  : PersistResult    
      * @Purpose     : To return the search Count with recordId based on the SA ID number
