@@ -59,7 +59,7 @@ public without sharing class SAIdDataService {
      * @Purpose     : To handle bulk record insert and upate the South_Africa_ID_Record__c
      * @param		: List of South_Africa_ID_Record__crecords to Save and to persist; null or empty is a no-op
      */
-    public static void saveRecords(
+    public static void saveRecords1(
         List<SouthAfricanIDNumber_Record__c> recordsToSave
     ) {
         if (recordsToSave == null || recordsToSave.isEmpty()) {
@@ -90,6 +90,27 @@ public without sharing class SAIdDataService {
 
         if (!toUpdate.isEmpty()) {
             update toUpdate;
+        }
+    }
+
+    public static void saveRecords(
+    List<SouthAfricanIDNumber_Record__c> recordsToSave
+    ) {
+        if (recordsToSave == null || recordsToSave.isEmpty()) {
+            return;
+        }
+
+        List<SouthAfricanIDNumber_Record__c> validRecords =
+            new List<SouthAfricanIDNumber_Record__c>();
+
+        for (SouthAfricanIDNumber_Record__c rec : recordsToSave) {
+            if (rec != null) {
+                validRecords.add(rec);
+            }
+        }
+
+        if (!validRecords.isEmpty()) {
+            upsert validRecords SouthAfricanId_Hash__c;
         }
     }
 }
