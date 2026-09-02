@@ -9,5 +9,4 @@
     <columns>Calendarific_Hash_Key__c</columns>
     <filterScope>Everything</filterScope>
     <label>Custom Setting</label>
-    <language>en_US</language>
 </ListView>
